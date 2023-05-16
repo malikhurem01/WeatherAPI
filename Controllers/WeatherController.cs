@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WeatherAPI.Models;
 using WeatherAPI.Services;
 
 namespace WeatherAPI.Controllers
@@ -12,28 +13,22 @@ namespace WeatherAPI.Controllers
             _weatherService = weatherService;
         }
 
-        [HttpGet]
-        public Task<ActionResult<string>> GetCurrentWeather(string location)
+        [HttpGet("/current")]
+        public async Task<ActionResult<ServiceResponse<string>>> GetCurrentWeather(string location)
         {
-            return null;
+            return await _weatherService.GetCurrentWeather(location);
         }
 
-        [HttpGet]
+        [HttpGet("/forecast")]
         public Task<ActionResult<string>> GetWeatherForecast(string location)
         {
             return null;
         }
 
-        [HttpGet]
+        [HttpGet("/history")]
         public Task<ActionResult<string>> GetWeatherHistory(string location)
         {
             return null;
         }
-
-        /*
-         /weather/current: returns the current weather conditions for a specific location
-/weather/forecast: returns the weather forecast for a specific location
-/weather/history: returns historical weather data for a specific location
-         */
     }
 }
