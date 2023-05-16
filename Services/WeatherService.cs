@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using WeatherAPI.Models;
+﻿using WeatherAPI.Models;
 
 namespace WeatherAPI.Services
 {
@@ -22,28 +21,68 @@ namespace WeatherAPI.Services
                 {
                     HttpResponseMessage response = await client.GetAsync(URL);
                     response.EnsureSuccessStatusCode();
-
                     responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseBody);
+                    serviceResponse.Message = "Successfully fetched data for " + location + ".";
+                    serviceResponse.Data = responseBody;
                 }
                 catch (HttpRequestException ex)
                 {
-                    Console.WriteLine("Error: " + ex.Message);
+                    serviceResponse.Message = "Error: " + ex.Message;
                 }
             }
-            serviceResponse.Message = "Successfully fetched data for " + location + ".";
-            serviceResponse.Data = responseBody;
             return serviceResponse;
         }
 
-        Task<ServiceResponse<string>> IWeatherService.GetWeatherForecast(string location)
+        public async Task<ServiceResponse<string>> GetWeatherForecast(string location, int days)
         {
-            throw new NotImplementedException();
+            var serviceResponse = new ServiceResponse<string>();
+            string responseBody = string.Empty;
+            var URL = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY + "&q=" + location + "&days=" + days + "&aqi=no&alerts=no";
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(URL);
+                    response.EnsureSuccessStatusCode();
+                    responseBody = await response.Content.ReadAsStringAsync();
+                    serviceResponse.Message = "Successfully fetched data for " + location + ".";
+                    serviceResponse.Data = responseBody;
+                }
+                catch (HttpRequestException ex)
+                {
+                    serviceResponse.Message = "Error: " + ex.Message;
+                }
+            }
+            return serviceResponse;
         }
 
-        Task<ServiceResponse<string>> IWeatherService.GetWeatherHistory(string location)
+        public async Task<ServiceResponse<string>> GetWeatherHistory(string location, int days)
         {
-            throw new NotImplementedException();
+            if(days > 3)
+            {
+                throw new Exception("ERROR: You can only search for up to 3 days in history.");
+            }
+            var serviceResponse = new ServiceResponse<string>();
+            string responseBody = string.Empty;
+            DateTime dateTime = DateTime.Now;
+            dateTime = dateTime.AddDays(-days);
+            var URL = "http://api.weatherapi.com/v1/history.json?key=" + API_KEY + "&q=" + location + "&dt=" + dateTime;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(URL);
+                    response.EnsureSuccessStatusCode();
+                    responseBody = await response.Content.ReadAsStringAsync();
+                    serviceResponse.Message = "Successfully fetched data for " + location + ".";
+                    serviceResponse.Data = responseBody;
+                }
+                catch (HttpRequestException ex)
+                {
+                    serviceResponse.Message = "Error: " + ex.Message;
+                }
+            }
+            return serviceResponse;
         }
     }
 }
