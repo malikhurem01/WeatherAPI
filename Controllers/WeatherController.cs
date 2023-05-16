@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WeatherAPI.Models;
 using WeatherAPI.Services;
 
 namespace WeatherAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/[controller]")]
     public class WeatherController : ControllerBase
@@ -20,15 +22,15 @@ namespace WeatherAPI.Controllers
         }
 
         [HttpGet("/forecast")]
-        public Task<ActionResult<string>> GetWeatherForecast(string location)
+        public async Task<ActionResult<ServiceResponse<string>>> GetWeatherForecast(string location, int days)
         {
-            return null;
+            return await _weatherService.GetWeatherForecast(location, days);
         }
 
         [HttpGet("/history")]
-        public Task<ActionResult<string>> GetWeatherHistory(string location)
+        public async Task<ActionResult<ServiceResponse<string>>> GetWeatherHistory(string location, int days)
         {
-            return null;
+            return await _weatherService.GetWeatherHistory(location, days);
         }
     }
 }
