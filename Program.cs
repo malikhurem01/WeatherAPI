@@ -1,3 +1,4 @@
+using WeatherAPI.Extensions;
 using WeatherAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,10 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IWeatherService, WeatherService>();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.RegisterJWTAuthentication(builder.Configuration);
+builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IWeatherService, WeatherService>();
 
 var app = builder.Build();
 
@@ -20,7 +22,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
